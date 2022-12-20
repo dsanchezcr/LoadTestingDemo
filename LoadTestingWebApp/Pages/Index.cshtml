@@ -1,0 +1,24 @@
+﻿@page
+@model IndexModel
+<header class="p-5 mb-5 bg-dark text-white rounded-bottom">
+    <div class="container-fluid">
+        <h4 class="display-4 fw-bold">
+            Azure Load Testing Demo
+        </h4>
+        <p class="fs-4">
+            Your visit have been registered.
+        </p>
+    </div>
+</header>
+<div class="row" data-masonry='{"percentPosition": true }'>
+    @foreach (LoadTestingWebApp.Models.Visit visit in Model.Visits ?? Enumerable.Empty<LoadTestingWebApp.Models.Visit>())
+    {
+        <div class="col-sm-6 col-lg-4 mb-4">
+            <div class="card">
+                <h6 class="card-header bg-primary text-white d-flex w-100 justify-content-between">
+                    @visit.dateTime
+                </h6>
+            </div>
+        </div>
+    }
+</div>
