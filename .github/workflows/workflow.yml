@@ -26,7 +26,7 @@ jobs:
         with: 
           app-name: ${{ env.AZURE_WEBAPP_NAME }} 
           publish-profile: ${{ secrets.AZURE_WEBAPP_SECRET  }} # Add an publishing profile secret variable in your repository
-          package: '${{ env.AZURE_WEBAPP_PACKAGE_PATH }}/WebApp'
+          package: '${{ env.AZURE_WEBAPP_PACKAGE_PATH }}/LoadTestingWebApp/WebApp'
   LoadTest:
     name: LoadTest
     needs: Build-and-Deploy
