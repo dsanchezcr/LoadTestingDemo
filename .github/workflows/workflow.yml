@@ -1,11 +1,15 @@
 name: Build-Deploy-WebApp
 on: [push]
+#Change it with your own resources
 env:
   AZURE_WEBAPP_NAME: loadtestingweb
   AZURE_WEBAPP_PACKAGE_PATH: 'LoadTestingWebApp'
+  LOAD_TEST_RESOURCE_GROUP: 'LoadTestingSample'
+  LOAD_TEST_RESOURCE: 'LoadTestingWebApp'
   DOTNET_VERSION: '7.0.x'
 jobs:
-  build:
+  Build-Deploy:
+    name: Build-Deploy
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@main      
@@ -18,10 +22,39 @@ jobs:
           dotnet restore
           dotnet build --configuration Release
           dotnet publish -c Release -o '${{ env.AZURE_WEBAPP_PACKAGE_PATH }}/LoadTestingWebApp'          
-      # Deploy to Azure Web apps
       - name: 'Deploy to Azure'
         uses: azure/webapps-deploy@v2
         with: 
           app-name: ${{ env.AZURE_WEBAPP_NAME }}
+          # Add a GitHub Secret for the Azure Web App Publishing Profile
           publish-profile: ${{ secrets.AZURE_WEBAPP_SECRET  }}
           package: '${{ env.AZURE_WEBAPP_PACKAGE_PATH }}/LoadTestingWebApp'
+  LoadTest:
+    name: LoadTest
+    needs: Build-Deploy
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@main          
+      - name: Login to Azure
+        uses: azure/login@v1
+        continue-on-error: false
+        with:
+          # Add an Azure Credential in GitHub Secrets to connect with Azure Load Testing
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+      - name: 'Azure Load Testing'
+        uses: azure/load-testing@v1
+        with:
+          loadTestConfigFile: 'LoadTestingConfig.yaml'
+          loadTestResource: ${{ env.LOAD_TEST_RESOURCE }}
+          resourceGroup: ${{ env.LOAD_TEST_RESOURCE_GROUP }}
+          env: |
+            [
+              {
+              "name": "webapp",
+              "value": "${{ env.AZURE_WEBAPP_NAME }}.azurewebsites.net"
+              }
+            ]                
+      - uses: actions/upload-artifact@v2
+        with:
+          name: loadTestResults
+          path: ${{ github.workspace }}/LoadTest

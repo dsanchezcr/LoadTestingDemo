@@ -1,5 +1,5 @@
 {
-    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
         "location": {
@@ -26,9 +26,10 @@
     "variables": {
         "cosmos_name": "[concat('loadtestingcosmos',uniqueString(resourceGroup().id))]",
         "logs_name": "[concat('loadtestinglogs',uniqueString(resourceGroup().id))]",
-        "plan_name": "[concat('loadtestingplan',uniqueString(resourceGroup().id))]",
+        "plan_name": "[concat('loadtestingappplan',uniqueString(resourceGroup().id))]",
         "insights_name": "[concat('loadtestinginsights',uniqueString(resourceGroup().id))]",
-        "app_name": "[concat('loadtestingweb',uniqueString(resourceGroup().id))]"
+        "app_name": "[concat('loadtestingweb',uniqueString(resourceGroup().id))]",
+        "loadtesting_name": "[concat('loadtesting',uniqueString(resourceGroup().id))]"
     },
     "resources": [
         {
@@ -136,6 +137,28 @@
                 "virtualNetworkSubnetId": null,
                 "httpsOnly": true
             }
+        },
+        {
+            "type": "Microsoft.Web/sites/config",
+            "apiVersion": "2020-12-01",
+            "name": "[format('{0}/{1}', variables('app_name'), 'connectionstrings')]",
+            "properties": {
+                "Cosmos": {
+                "value": "[listConnectionStrings(resourceId('Microsoft.DocumentDB/databaseAccounts', variables('cosmos_name')), '2019-12-12').connectionStrings[0].connectionString]",
+                "type": "Custom"                
+                }
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.DocumentDb/databaseAccounts', variables('cosmos_name'))]",
+                "[resourceId('Microsoft.Web/sites', variables('app_name'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.LoadTestService/loadtests",
+            "apiVersion": "2022-12-01",
+            "name": "[variables('loadtesting_name')]",
+            "location": "[parameters('location')]",
+            "tags": {}
         }
     ],
     "outputs": {}

@@ -16,3 +16,5 @@ If you would like to try this demo/project. You will need to deploy the followin
 You can use the following ARM template to deploy the resources needed:
 
 [![Deploy to Azure](img/deploy.png)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fdsanchezcr%2FLoadTestingDemo%2Fmain%2FARM%2Ftemplate.json)
+
+> Note: Azure Cosmos DB is going to be created using the [free tier](https://learn.microsoft.com/azure/cosmos-db/free-tier), which only allows one per subscription, if you have already another Cosmos DB free tier, you will get a deployment error.
