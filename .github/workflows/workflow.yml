@@ -28,7 +28,7 @@ jobs:
           package: '${{ env.AZURE_WEBAPP_PACKAGE_PATH }}/LoadTestingWebApp'
   LoadTest:
     name: LoadTest
-    needs: Build-Deploy
+    needs: Build-and-Deploy
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@main          
