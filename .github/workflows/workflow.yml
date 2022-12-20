@@ -1,0 +1,27 @@
+name: Build-Deploy-WebApp
+on: [push]
+env:
+  AZURE_WEBAPP_NAME: loadtestingweb
+  AZURE_WEBAPP_PACKAGE_PATH: 'LoadTestingWebApp'
+  DOTNET_VERSION: '7.0.x'
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@main      
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}      
+      - name: Build .NET
+        run: |
+          dotnet restore
+          dotnet build --configuration Release
+          dotnet publish -c Release -o '${{ env.AZURE_WEBAPP_PACKAGE_PATH }}/LoadTestingWebApp'          
+      # Deploy to Azure Web apps
+      - name: 'Deploy to Azure'
+        uses: azure/webapps-deploy@v2
+        with: 
+          app-name: ${{ env.AZURE_WEBAPP_NAME }}
+          publish-profile: ${{ secrets.AZURE_WEBAPP_SECRET  }}
+          package: '${{ env.AZURE_WEBAPP_PACKAGE_PATH }}/LoadTestingWebApp'

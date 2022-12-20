@@ -1,0 +1,142 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "location": {
+            "type": "String",
+            "defaultValue": "eastus"
+        },
+        "locationName": {
+            "type": "String",
+            "defaultValue": "East US"
+        },
+         "sku": {
+            "type": "String",
+            "defaultValue": "Basic"
+        },
+        "skucode": {
+            "type": "String",
+            "defaultValue": "B1"
+        },
+        "linuxFxVersion": {
+            "type": "String",
+            "defaultValue": "DOTNETCORE|7.0"
+        }
+    },
+    "variables": {
+        "cosmos_name": "[concat('loadtestingcosmos',uniqueString(resourceGroup().id))]",
+        "logs_name": "[concat('loadtestinglogs',uniqueString(resourceGroup().id))]",
+        "plan_name": "[concat('loadtestingplan',uniqueString(resourceGroup().id))]",
+        "insights_name": "[concat('loadtestinginsights',uniqueString(resourceGroup().id))]",
+        "app_name": "[concat('loadtestingweb',uniqueString(resourceGroup().id))]"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.DocumentDb/databaseAccounts",
+            "apiVersion": "2022-08-15-preview",
+            "name": "[variables('cosmos_name')]",
+            "location": "[parameters('location')]",
+            "tags": {
+                "defaultExperience": "Core (SQL)",
+                "hidden-cosmos-mmspecial": ""
+            },
+            "kind": "GlobalDocumentDB",
+            "properties": {
+                "databaseAccountOfferType": "Standard",
+                "locations": [
+                    {
+                        "id": "[concat(variables('cosmos_name'), '-', parameters('location'))]",
+                        "failoverPriority": 0,
+                        "locationName": "[parameters('locationName')]"
+                    }
+                ],
+                "backupPolicy": {
+                    "type": "Periodic",
+                    "periodicModeProperties": {
+                        "backupIntervalInMinutes": 240,
+                        "backupRetentionIntervalInHours": 8,
+                        "backupStorageRedundancy": "Geo"
+                    }
+                },
+                "isVirtualNetworkFilterEnabled": false,
+                "virtualNetworkRules": [],
+                "ipRules": [],
+                "dependsOn": [],
+                "enableMultipleWriteLocations": false,
+                "capabilities": [],
+                "enableFreeTier": true,
+                "capacity": {
+                    "totalThroughputLimit": 1000
+                }
+            }
+        },
+        {
+            "type": "Microsoft.OperationalInsights/workspaces",
+            "apiVersion": "2017-03-15-preview",
+            "name": "[variables('logs_name')]",
+            "location": "[parameters('location')]",
+            "tags": {},
+            "properties": {
+                "sku": {
+                    "name": "pergb2018"
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Web/serverfarms",
+            "apiVersion": "2018-11-01",
+            "name": "[variables('plan_name')]",
+            "location": "[parameters('location')]",
+            "sku": {
+                "Tier": "[parameters('sku')]",
+                "Name": "[parameters('skuCode')]"
+            },
+            "kind": "linux",
+            "properties": {
+                "name": "[variables('plan_name')]",
+                "workerSize": 0,
+                "workerSizeId": 0,
+                "numberOfWorkers": 1,
+                "reserved": true,
+                "zoneRedundant": false
+            }
+        },
+        {
+            "type": "microsoft.insights/components",
+            "apiVersion": "2020-02-02-preview",
+            "name": "[variables('insights_name')]",
+            "location": "[parameters('location')]",
+            "dependsOn": [ "[resourceId('Microsoft.OperationalInsights/workspaces/', variables('logs_name'))]" ],
+            "tags": {},
+            "properties": {
+                "ApplicationId": "[variables('insights_name')]",
+                "Application_Type": "web",
+                "Flow_Type": "Redfield",
+                "Request_Source": "IbizaAIExtension",
+                "WorkspaceResourceId": "[resourceId('Microsoft.OperationalInsights/workspaces/', variables('logs_name'))]"
+            }
+        },
+         {
+            "type": "Microsoft.Web/sites",
+            "apiVersion": "2018-11-01",
+            "name": "[variables('app_name')]",
+            "location": "[parameters('location')]",
+            "dependsOn": [ "[resourceId('Microsoft.Web/serverfarms/', variables('plan_name'))]" ],
+            "tags": {},
+            "properties": {
+                "name": "[variables('app_name')]",
+                "siteConfig": {
+                    "appSettings": [],
+                    "linuxFxVersion": "[parameters('linuxFxVersion')]",
+                    "alwaysOn": false,
+                    "ftpsState": "FtpsOnly"
+                },
+                "serverFarmId": "[resourceId('Microsoft.Web/serverfarms/', variables('plan_name'))]",
+                "clientAffinityEnabled": false,
+                "virtualNetworkSubnetId": null,
+                "httpsOnly": true
+            }
+        }
+    ],
+    "outputs": {}
+}
