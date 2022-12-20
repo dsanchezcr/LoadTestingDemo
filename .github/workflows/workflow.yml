@@ -3,7 +3,7 @@ on: [push]
 #Change it with your own resources
 env:
   AZURE_WEBAPP_NAME: loadtestingweb
-  AZURE_WEBAPP_PACKAGE_PATH: 'LoadTestingWebApp'
+  AZURE_WEBAPP_PACKAGE_PATH: './LoadTestingWebApp'
   LOAD_TEST_RESOURCE_GROUP: 'LoadTestingSample'
   LOAD_TEST_RESOURCE: 'LoadTestingWebApp'
   DOTNET_VERSION: '7.0.x'
