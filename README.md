@@ -4,6 +4,9 @@ This is a demo repository about Azure Load Testing in CI/CD with Azure DevOps an
 
 Check out the [blog post about this repository](https://xpirit.com/adding-load-testing-to-your-workflows).
 
+## GitHub Action Badge
+
+
 ## Want to try it out?
 
 If you would like to try this demo/project. You will need to deploy the following Azure resources:
