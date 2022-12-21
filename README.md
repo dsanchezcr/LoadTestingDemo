@@ -5,7 +5,7 @@ This is a demo repository about Azure Load Testing in CI/CD with Azure DevOps an
 Check out the [blog post about this repository](https://xpirit.com/adding-load-testing-to-your-workflows).
 
 ## GitHub Action Badge
-
+[![Build-Deploy-WebApp](https://github.com/dsanchezcr/LoadTestingDemo/actions/workflows/workflow.yml/badge.svg)](https://github.com/dsanchezcr/LoadTestingDemo/actions/workflows/workflow.yml)
 
 ## Want to try it out?
 
