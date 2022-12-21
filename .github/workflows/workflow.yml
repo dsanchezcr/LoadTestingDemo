@@ -43,7 +43,7 @@ jobs:
         with:
           app-name: ${{ env.AZURE_WEBAPP_NAME }}
           publish-profile: ${{ secrets.AZURE_WEBAPP_SECRET }}
-          package: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}/LoadTestingWebApp/myapp
+          package: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
   LoadTest:
     name: LoadTest
     needs: Deploy
