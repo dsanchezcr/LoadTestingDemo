@@ -15,8 +15,8 @@ jobs:
         uses: actions/setup-dotnet@v3
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
-          working-directory: LoadTestingWebApp
       - name: Build with dotnet
+        working-directory: LoadTestingWebApp
         run: dotnet build --configuration Release
       - name: dotnet publish
         run: dotnet publish -c Release -o ${{env.DOTNET_ROOT}}/myapp
