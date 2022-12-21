@@ -2,7 +2,7 @@ version: v0.1
 testName: LoadTesting
 testPlan: LoadTestingScript.jmx
 description: 'LoadTestingWebApp Test Run'
-engineInstances: 5
+engineInstances: 1
 failureCriteria: 
 - avg(response_time_ms) > 5000
 - percentage(error) > 20
