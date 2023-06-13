@@ -1,5 +1,5 @@
 name: Build-Deploy-WebApp
-on: [push]
+on: workflow_dispatch
 env: # Modify values with your resources
   AZURE_WEBAPP_NAME: loadtestingweb
   AZURE_WEBAPP_PACKAGE_PATH: '.'
