@@ -16,14 +16,14 @@ public class CosmosService : ICosmosService
         );
     }
 
-    private Container container
+    private Container Container
     {
         get => _client.GetDatabase("WebAppDB").GetContainer("Visits");
     }
 
     public async Task<IEnumerable<Visit>> RetrieveAllVisitsAsync()
     {
-        var queryable = container.GetItemLinqQueryable<Visit>();
+        var queryable = Container.GetItemLinqQueryable<Visit>();
 
         using FeedIterator<Visit> feed = queryable
             .OrderByDescending(v => v.dateTime)
@@ -45,6 +45,6 @@ public class CosmosService : ICosmosService
 
     public async Task AddVisitAsync(Visit _visit)
     {
-        await container.CreateItemAsync(_visit, new PartitionKey(_visit.id));
+        await Container.CreateItemAsync(_visit, new PartitionKey(_visit.id));
     }
 }
